@@ -1,0 +1,15 @@
+{
+  "name": "ytpayment",
+  "version": "1.0.0",
+  "description": "휴대전화의 SMS를 수신하여 Toss, 산업은행 결제 메시지를 확인하여 전송",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "pushbullet": "^2.4.0",
+    "request": "^2.88.0"
+  }
+}

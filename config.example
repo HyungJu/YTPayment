@@ -1,0 +1,4 @@
+module.exports = {
+    api_key : 'Pushbullet API Key',
+    uri : 'Webhooks URL'
+}

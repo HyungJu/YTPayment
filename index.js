@@ -1,11 +1,39 @@
-var PushBullet = require('pushbullet');
-var pusher = new PushBullet('o.R9jaHVgoGdOwjmD31xPdPCRD8B9ITrs7');
- 
-var stream = pusher.stream();
+const Config = require('./config.js')
+const PushBullet = require('pushbullet');
+const pusher = new PushBullet(Config.api_key);
+const stream = pusher.stream();
+const request = require('request')
+
+
+function payment_received(from, amount, sender, timestamp, message = null){
+    let options = {
+        uri : Config.uri,
+        method : 'POST',
+        form: {
+            'from' : from,
+            'amount' : amount,
+            'sender': sender,
+            'timestamp': timestamp,
+            'message': message
+        }
+    }
+  
+    try{
+        request(options, null, (error)=> {
+            throw new Error('이상한 에러가 발생했어')
+        })
+    }catch (e){
+        console.log(e)
+    }
+    
+  
+}
+
+
+
 
 
 let re =  /\[Web발신\]\n\(KDB\)성형주님\n020\*\*\*\*4566328\n입금\n(\d)원\n([a-z가-힣]*)\n([0-2][0-9]:[0-5][0-9]:[0-5][0-9])/
-console.log(re.exec("[Web발신]\n(KDB)성형주님\n020****4566328\n입금\n1원\n성형주\n18:42:00"))
 
 stream.connect();
 
@@ -17,9 +45,8 @@ stream.on('push', function(message){
         var amount = res[1]
         var sender = res[2]
         var timestamp = message.notifications[0].timestamp
-        var message = ""
-
-        console.log("입금 확인됨!"+amount+sender+timestamp)
+        
+        payment_received(1, amount, sender, timestamp)
     }else if(message.type=='mirror' && message.package_name == 'viva.republica.toss'){
         //Toss Message Detected 
         let re = /([a-zA-Z가-힣]*)님이 (\d*)원을 송금했습니다\. '([\S\s]*)'/
@@ -28,7 +55,8 @@ stream.on('push', function(message){
         var amount = res[2]
         var message = res[3]
         var timestamp = new Date().getTime()
-        console.log("입금 확인됨!"+amount+sender+timestamp+message)
+
+        payment_received(2, amount,sender, timestamp, message)
 
     }
 });
